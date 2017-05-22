@@ -8,7 +8,7 @@
 
 import UIKit
 import ReactiveReSwift
-import ReactiveSwift
+import RxSwift
 
 let middleware = Middleware<AppState>().sideEffect { _, _, action in
     print("Received action:")
@@ -16,10 +16,11 @@ let middleware = Middleware<AppState>().sideEffect { _, _, action in
     print(action)
 }
 
+
 // The global application store, which is responsible for managing the appliction state.
 let mainStore = Store(
     reducer: counterReducer,
-    observable: MutableProperty(AppState()),
+    observable: Variable(AppState()),
     middleware: middleware
 )
 

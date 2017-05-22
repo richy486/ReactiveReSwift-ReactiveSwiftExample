@@ -8,20 +8,20 @@
 
 import UIKit
 import ReactiveReSwift
-import ReactiveSwift
-import Result
+import RxSwift
+import RxCocoa
 
 class ViewController: UIViewController {
     
     @IBOutlet weak var counterLabel: UILabel!
     
-    let disposeBag = CompositeDisposable()
+    let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        disposeBag += mainStore.observable.subscribe { [weak self] store in
-            self?.counterLabel.text = String(store.counter)
-        }
+        mainStore.observable.asObservable().subscribe { [weak self] appState in
+            self?.counterLabel.text = String(appState.counter)
+        }?.disposed(by: disposeBag)
     }
     
     // when either button is tapped, an action is dispatched to the store
@@ -29,12 +29,12 @@ class ViewController: UIViewController {
     @IBAction func downTouch(_ sender: AnyObject) {
         // This is just to demonstrate that you can dispatch promises directly,
         // don't actually do this, this is bad code
-        mainStore.dispatch(SignalProducer<AppAction, NoError>(value: .decrease))
+        mainStore.dispatch(Variable<AppAction>(.decrease))
     }
     
     @IBAction func upTouch(_ sender: AnyObject) {
         // This is just to demonstrate that you can dispatch promises directly,
         // don't actually do this, this is bad code
-        mainStore.dispatch(SignalProducer<AppAction, NoError>(value: .increase))
+        mainStore.dispatch(Variable<AppAction>(.increase))
     }
 }
